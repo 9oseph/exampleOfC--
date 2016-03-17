@@ -1,9 +1,10 @@
-﻿  stdafx.cpp
-  Lecture7.cpp
-  Lecture6.cpp
-  Lecture5.cpp
-  Lecture4.cpp
-  Lecture3.cpp
-  HelloWorld.cpp
-  Generating Code...
-  HelloWorld.vcxproj -> C:\Users\lim\Documents\Visual Studio 2013\Projects\HelloWorld\Debug\HelloWorld.exe
+﻿빌드 시작: 2016-03-11 오후 4:02:56
+     1>2 노드의 "C:\Users\joseph\Documents\GitHub\exampleOfC--\HelloWorld\HelloWorld\HelloWorld.vcxproj" 프로젝트(ClCompile 대상)입니다.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\HelloWorld.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt 0311.cpp
+         0311.cpp
+     1>"C:\Users\joseph\Documents\GitHub\exampleOfC--\HelloWorld\HelloWorld\HelloWorld.vcxproj" 프로젝트를 빌드했습니다(ClCompile 대상).
+
+빌드했습니다.
+
+경과 시간: 00:00:00.37

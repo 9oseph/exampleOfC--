@@ -5,7 +5,7 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	CalcPersonFare();
+	listCall();
 	return 0;
 }
 

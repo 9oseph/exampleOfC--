@@ -368,6 +368,10 @@ void CalcPersonFare()
 // dynamic_cast<>   : 런타임시 상향 혹은 하향 형 변환
 // reinterpret_cast : C 의 형 변환 연산자와 흡사
 
+
+
+
+
 // 7.4.2 dynamic_cast
 
 // 동적으로 생성된 어떤 객체가 있다고 가정
@@ -383,14 +387,215 @@ public:
 	virtual void Draw() { cout << "CShape::Draw()" << endl; }
 };
 
+class CRectangle : public CShape
+{
+public:
+	virtual void Draw() { cout << "CRectangle::Draw()" << endl; }
+};
+
+class CCircle : public CShape
+{
+public:
+	virtual void Draw() { cout << "CCircle::Draw()" << endl; }
+};
+
+void CShapeCaller()
+{
+	cout << "도형 번호를 입력하세요. [ 1. 사각형, 2. 원 ] : " << endl;
+	int nInput(0);
+	cin >> nInput;
+
+	CShape *pShape = nullptr;
+	if (nInput == 1)
+	{
+		pShape = new CRectangle;
+	}
+	else if (nInput == 2)
+	{
+		pShape = new CCircle;
+	}
+	else
+	{
+		pShape = new CShape;
+	}
+
+	// 좋은 예
+	pShape->Draw();
+
+	// 매우 나쁜 예
+	// 가상 함수를 활용한다면, 이런 코드를 작성할 이유가 없다.
+	CRectangle *pRect = dynamic_cast<CRectangle*>(pShape);
+	if (pRect != nullptr)
+	{
+		cout << "CRectangle::Draw()" << endl;
+	}
+	else
+	{
+		CCircle *pCircle = dynamic_cast<CCircle*>(pShape);
+		if (pCircle != nullptr)
+		{
+			cout << "CCircle::Draw()" << endl;
+		}
+		else
+		{
+			cout << "CShape::Draw()" << endl;
+		}
+	}
+}
+
+// dynamic_cast 연산자는 형 변환에 실패하면 null 을 반환
+// 이 방법으로 바른 변환인지 확인 가능 (Run-Time Type Information(or Identification))
+// dynamic_cast가 꼭 필요한 경우가 아니라면 절대로 사용하지 말아야 한다.
+// ==> 성능을 떨어뜨리는 주범, 코드를 복잡하게 
+
+// C++ 에서 RTTI 를 수행하기 위한 방법으로 typeid 연산자도 있으나 성능이 나빠지는것은 마찬가지
+
+// switch-case 문과 RTTI 는 설계 하기에 따라 가상 함수와 추상 자료형을 사용하는 방법으로 전환하는 경우가 많음
 
 
+// 7.5 상속과 연산자 다중 정의
 
+// 파생 클래스에서 기본 클래스가 가진 생성자를 그대로 지원하고 싶다면, 일일이 맞추어 똑같이 정의해야 한다.
+// ==> using 선언으로 한 큐에 해결!
 
+// 이와 유사한 문제가 연산자 함수에도 존재
+// 기본적으로 모든 연산자는 파생 형식에 자동으로 상속
+// ==> 단순 대입 연산자는 예외!
 
+class inheritOperOver
+{
+protected:
+	int m_nData = 0;
+public:
+	inheritOperOver(int nParam) : m_nData(nParam) { }
 
+	inheritOperOver operator+(const inheritOperOver &rhs)
+	{
+		return inheritOperOver(m_nData + rhs.m_nData);
+	}
 
+	inheritOperOver& operator=(const inheritOperOver &rhs)
+	{
+		m_nData = rhs.m_nData;
+		return *this;
+	}
 
+	operator int() { return m_nData; }
+};
+
+class inheritOperOverEx : public inheritOperOver
+{
+public:
+	inheritOperOverEx(int nParam) : inheritOperOver(nParam) { }
+
+	// 단순 대입 연산자는 따로 만들어 줘야 한다.
+	inheritOperOverEx operator+(const inheritOperOverEx &rhs)
+	{
+		return inheritOperOverEx(static_cast<int>(inheritOperOver::operator+(rhs)));
+	}
+
+	// 혹은 인터페이스를 맞춰주기 위한 연산자 다중 정의
+	// 상위 클래스의 연산자 함수들을 그대로 차용한다고 선언
+	using inheritOperOver::operator+;
+	using inheritOperOver::operator=;
+};
+
+void inheritOperOverCaller()
+{
+	inheritOperOver a(3), b(4);
+	cout << a + b << endl;
+
+	inheritOperOverEx c(3), d(4), e(0);
+
+	// inheritOperOverEx 클래스에 맞는 단순 대입 연산자가 없어서 컴파일 오류가 발생한다.
+	// 문제는 이때 호출되는 연산자 함수가 inheritOperOver operator+(const inheritOperOver &rhs) 이므로
+	// 단순 대입의 r-value 가 inheritOperOver 형식.
+	// 이것을 inheritOperOverEx에 대입하려고 하니 오류가 발생
+	e = c + d;
+	cout << e << endl;
+}
+
+// 7.6 다중 상속
+
+// 7.6.1 다중 상속과 모호성
+
+// 여러 클래스의 장점/단점을 모두 상속
+// 가급적 안쓰는게 정신 건강에 좋음
+
+// 7.6.2 가상 상속
+
+class virtualObject
+{
+public:
+	virtualObject() { cout << "virtualObject()" << endl; }
+	virtual ~virtualObject() {}
+};
+
+class virtualImage : public virtualObject
+{
+public:
+	virtualImage() { cout << "virtualImage(int, int)" << endl; }
+};
+
+class virtualShape : public virtualObject
+{
+public:
+	virtualShape() { cout << "virtualShape(int)" << endl; }
+};
+
+class virtualPicture : public virtualImage, public virtualShape
+{
+public:
+	virtualPicture() { cout << "virtualPicture()" << endl; }
+};
+
+void virtualObjectCaller()
+{
+	// virtualObject 의 생성자는 두 번 호출된다.
+	// 멤버가 있는 경우 중복해서 생성되게 된다.
+	// 이런 경우 '가상 상속' 을 통해 중복 문제를 해결 가능
+	// ex. class virtualImage : virtual public virtualObject
+
+	virtualPicture a;
+}
+
+// 7.6.3 인터페이스 다중 상속
+
+// 다중 상속이 유일하게 좋은 결과로 나타나는 경우
+// ==> 인터페이스 다중 상속
+// 인터페이스 클래스는 말 그대로 '인터페이스'만 갖는다.
+// ==> 보통 순수 가상 클래스로 선언하는 경우가 많다.
+
+class USB
+{
+public:
+	virtual int GetUsbVersion() = 0;
+	virtual int GetTransferRate() = 0;
+};
+
+class Serial
+{
+public:
+	virtual int GetSignal() = 0;
+	virtual int GetRate() = 0;
+};
+
+class Device : public USB, public Serial
+{
+public:
+	// USB
+	virtual int GetUsbVersion() { return 0; }
+	virtual int GetTransferRate() { return 0; }
+
+	// Serial
+	virtual int GetSignal() { return 0; }
+	virtual int GetRate() { return 0; }
+};
+
+void DeviceCaller()
+{
+	Device dev;
+}
 
 
 

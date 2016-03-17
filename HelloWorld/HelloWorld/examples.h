@@ -31,4 +31,10 @@ void lateBindingCaller();
 void interfaceCaller();
 void objCaller();
 void CalcPersonFare();
+void CShapeCaller();
+void inheritOperOverCaller();
+void virtualObjectCaller();
+void DeviceCaller();
+void friendFuncCaller();
+void listCall();
 
